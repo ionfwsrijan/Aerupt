@@ -1,0 +1,196 @@
+{
+  "scenario": "s02_interrupt_retarget_destination",
+  "gold": {
+    "tools": [
+      "flight_search"
+    ],
+    "final_intent": "flight_search",
+    "final_slots": {
+      "destination": "tokyo"
+    },
+    "response_must_contain": [
+      "Tokyo",
+      "SU453"
+    ],
+    "must_cancel": true,
+    "latency_ms": 800,
+    "multimodal": true,
+    "hidden_15x": true
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "transcript",
+      "data": {
+        "text": "Search for flights from Paris to London tomorrow.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    },
+    {
+      "ts": 0.65,
+      "type": "interrupt",
+      "data": {
+        "reason": "user_override"
+      }
+    },
+    {
+      "ts": 0.72,
+      "type": "transcript",
+      "data": {
+        "text": "Actually, make that Tokyo.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.0006,
+      "type": "narration",
+      "data": {
+        "text": "Checking Paris to London flights, tomorrow."
+      }
+    },
+    {
+      "ts": 0.0008,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 0.7047,
+      "type": "filler",
+      "data": {
+        "text": "One moment \u2014 let me redo that."
+      }
+    },
+    {
+      "ts": 0.7367,
+      "type": "cancel",
+      "data": {
+        "call_ids": [
+          "c0001"
+        ]
+      }
+    },
+    {
+      "ts": 0.7836,
+      "type": "filler",
+      "data": {
+        "text": "Got it \u2014 let me start over."
+      }
+    },
+    {
+      "ts": 0.7838,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 1.5917,
+      "type": "narration",
+      "data": {
+        "text": "No flights that day \u2014 looking at nearby dates."
+      }
+    },
+    {
+      "ts": 1.5918,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo"
+        }
+      }
+    },
+    {
+      "ts": 2.4068,
+      "type": "response",
+      "data": {
+        "text": "I found 2 flights from Paris to Tokyo. SU453 economy at 09:20 for $640; SU454 business at 22:05 for $712. Cheapest is $640. Shall I book the cheapest?",
+        "snapshot": {
+          "intent": "flight_search",
+          "slots": {
+            "origin": "paris",
+            "destination": "tokyo",
+            "date": "2026-09-25"
+          },
+          "version": 2,
+          "turn": 2,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 3,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        },
+        "ts": 0.0008,
+        "speculative": false,
+        "ok": true,
+        "error": null
+      },
+      {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        },
+        "ts": 0.7838,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 1.5916052000000036
+      },
+      {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo"
+        },
+        "ts": 1.5918,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 2.4066182000000254
+      }
+    ],
+    "bookings": 0,
+    "cancelled_bookings": 0,
+    "tickets": 0,
+    "cancelled_ids": [
+      "c0001"
+    ]
+  }
+}

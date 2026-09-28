@@ -1,0 +1,94 @@
+{
+  "scenario": "s11_support_ticket",
+  "gold": {
+    "tools": [
+      "create_ticket"
+    ],
+    "state_modifying_tools": [
+      "create_ticket"
+    ],
+    "final_intent": "create_ticket",
+    "final_slots": {
+      "subject": "my fridge not cooling properly"
+    },
+    "response_must_contain": [
+      "ticket"
+    ],
+    "latency_ms": 600
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "transcript",
+      "data": {
+        "text": "Please create a support ticket about my fridge not cooling properly.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.001,
+      "type": "narration",
+      "data": {
+        "text": "Got it \u2014 creating a ticket about My fridge not cooling properly."
+      }
+    },
+    {
+      "ts": 0.0013,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "create_ticket",
+        "args": {
+          "subject": "My fridge not cooling properly",
+          "description": "Create Support Ticket About My Fridge Not Cooling Properly"
+        }
+      }
+    },
+    {
+      "ts": 0.8139,
+      "type": "response",
+      "data": {
+        "text": "Your support ticket is TK901. I'll keep you posted.",
+        "snapshot": {
+          "intent": "create_ticket",
+          "slots": {
+            "device_model": "Fridge",
+            "subject": "My fridge not cooling properly",
+            "ticket_id": "TK901"
+          },
+          "version": 2,
+          "turn": 1,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 1,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "create_ticket",
+        "args": {
+          "subject": "My fridge not cooling properly",
+          "description": "Create Support Ticket About My Fridge Not Cooling Properly"
+        },
+        "ts": 0.0013,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 0.8137779000001046
+      }
+    ],
+    "bookings": 0,
+    "cancelled_bookings": 0,
+    "tickets": 1,
+    "cancelled_ids": []
+  }
+}

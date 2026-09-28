@@ -1,0 +1,110 @@
+{
+  "scenario": "s08_visual_frame_grounded_manual",
+  "gold": {
+    "tools": [
+      "manual_lookup"
+    ],
+    "final_intent": "manual_lookup",
+    "final_slots": {
+      "device_model": "Washer"
+    },
+    "response_must_contain": [
+      "manual"
+    ],
+    "must_cancel": false,
+    "latency_ms": 700,
+    "multimodal": true,
+    "hidden_15x": true
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "frame",
+      "data": {
+        "png": "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"
+      }
+    },
+    {
+      "ts": 0.6,
+      "type": "transcript",
+      "data": {
+        "text": "Why won't my washer spin? Check the manual.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.0002,
+      "type": "filler",
+      "data": {
+        "text": "Thanks \u2014 I can see the device now."
+      }
+    },
+    {
+      "ts": 0.6133,
+      "type": "narration",
+      "data": {
+        "text": "Let me check the manual for that."
+      }
+    },
+    {
+      "ts": 0.6136,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "manual_lookup",
+        "args": {
+          "query": "Why Won'T My Washer Spin",
+          "device_model": "Washer",
+          "frame_ref": "frame:6df1d097:320x240"
+        }
+      }
+    },
+    {
+      "ts": 1.4143,
+      "type": "response",
+      "data": {
+        "text": "Here are the steps from the manual: Power-cycle the unit by holding power for 10s.; Reset to factory defaults if the LED stays amber.; Check the washer manual page 12..",
+        "snapshot": {
+          "intent": "manual_lookup",
+          "slots": {
+            "destination": "washer",
+            "device_model": "Washer",
+            "query": "Why Won'T My Washer Spin"
+          },
+          "version": 3,
+          "turn": 1,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 1,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "manual_lookup",
+        "args": {
+          "query": "Why Won'T My Washer Spin",
+          "device_model": "Washer",
+          "frame_ref": "frame:6df1d097:320x240"
+        },
+        "ts": 0.6136,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 1.4141331999999238
+      }
+    ],
+    "bookings": 0,
+    "cancelled_bookings": 0,
+    "tickets": 0,
+    "cancelled_ids": []
+  }
+}

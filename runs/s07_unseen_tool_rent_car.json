@@ -1,0 +1,91 @@
+{
+  "scenario": "s07_unseen_tool_rent_car",
+  "gold": {
+    "tools": [
+      "rent_car"
+    ],
+    "final_intent": "rent_car",
+    "final_slots": {
+      "vehicle_type": "suv"
+    },
+    "response_must_contain": [
+      "suv"
+    ],
+    "latency_ms": 600,
+    "hidden_15x": true
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "transcript",
+      "data": {
+        "text": "I need to rent an SUV in Barcelona for 3 days.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.0013,
+      "type": "narration",
+      "data": {
+        "text": "Let me check rental availability."
+      }
+    },
+    {
+      "ts": 0.0016,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "rent_car",
+        "args": {
+          "vehicle_type": "SUV",
+          "days": 3
+        }
+      }
+    },
+    {
+      "ts": 0.6132,
+      "type": "response",
+      "data": {
+        "text": "All set \u2014 vehicle type SUV, days 3 it is.",
+        "snapshot": {
+          "intent": "rent_car",
+          "slots": {
+            "vehicle_type": "SUV",
+            "days": 3
+          },
+          "version": 3,
+          "turn": 1,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 1,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "rent_car",
+        "args": {
+          "vehicle_type": "SUV",
+          "days": 3
+        },
+        "ts": 0.0016,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 0.6130926999999247
+      }
+    ],
+    "bookings": 0,
+    "cancelled_bookings": 0,
+    "tickets": 0,
+    "cancelled_ids": []
+  }
+}

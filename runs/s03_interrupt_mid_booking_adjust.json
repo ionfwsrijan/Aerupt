@@ -1,0 +1,228 @@
+{
+  "scenario": "s03_interrupt_mid_booking_adjust",
+  "gold": {
+    "tools": [
+      "flight_search",
+      "book_flight"
+    ],
+    "chain": true,
+    "state_modifying_tools": [
+      "book_flight"
+    ],
+    "final_intent": "book_flight",
+    "final_slots": {
+      "passengers": 2,
+      "class": "business"
+    },
+    "response_must_contain": [
+      "SU452",
+      "booked"
+    ],
+    "must_cancel": true,
+    "latency_ms": 800
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "transcript",
+      "data": {
+        "text": "Book a flight from Paris to London tomorrow.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    },
+    {
+      "ts": 0.6,
+      "type": "interrupt",
+      "data": {
+        "reason": "user_override"
+      }
+    },
+    {
+      "ts": 0.68,
+      "type": "transcript",
+      "data": {
+        "text": "Make it two passengers, business class instead.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.0006,
+      "type": "narration",
+      "data": {
+        "text": "Okay, booking your trip to London."
+      }
+    },
+    {
+      "ts": 0.0008,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 0.6472,
+      "type": "filler",
+      "data": {
+        "text": "One moment \u2014 let me redo that."
+      }
+    },
+    {
+      "ts": 0.6787,
+      "type": "cancel",
+      "data": {
+        "call_ids": [
+          "c0001"
+        ]
+      }
+    },
+    {
+      "ts": 0.7436,
+      "type": "filler",
+      "data": {
+        "text": "Got it \u2014 let me start over."
+      }
+    },
+    {
+      "ts": 0.7438,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 1.5441,
+      "type": "narration",
+      "data": {
+        "text": "No flights that day \u2014 looking at nearby dates."
+      }
+    },
+    {
+      "ts": 1.5441,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london"
+        }
+      }
+    },
+    {
+      "ts": 2.3567,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0004",
+        "tool": "book_flight",
+        "args": {
+          "flight_id": "SU452",
+          "passengers": 2
+        }
+      }
+    },
+    {
+      "ts": 3.3711,
+      "type": "response",
+      "data": {
+        "text": "Done \u2014 flight SU452 is booked. Your reference is AER1001.",
+        "snapshot": {
+          "intent": "book_flight",
+          "slots": {
+            "origin": "paris",
+            "destination": "london",
+            "date": "2026-09-25",
+            "passengers": 2,
+            "class": "business",
+            "flight_id": "SU452"
+          },
+          "version": 3,
+          "turn": 2,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 4,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        },
+        "ts": 0.0008,
+        "speculative": false,
+        "ok": true,
+        "error": null
+      },
+      {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        },
+        "ts": 0.7438,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 1.544002399999954
+      },
+      {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london"
+        },
+        "ts": 1.5441,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 2.356461199999899
+      },
+      {
+        "call_id": "c0004",
+        "tool": "book_flight",
+        "args": {
+          "flight_id": "SU452",
+          "passengers": 2
+        },
+        "ts": 2.3567,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 3.3709364999999707
+      }
+    ],
+    "bookings": 1,
+    "cancelled_bookings": 0,
+    "tickets": 0,
+    "cancelled_ids": [
+      "c0001"
+    ]
+  }
+}

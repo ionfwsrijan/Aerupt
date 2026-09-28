@@ -1,0 +1,346 @@
+{
+  "scenario": "s13_rapid_multi_correction_storm",
+  "gold": {
+    "tools": [
+      "flight_search",
+      "book_flight"
+    ],
+    "state_modifying_tools": [
+      "book_flight"
+    ],
+    "final_intent": "book_flight",
+    "final_slots": {
+      "destination": "tokyo",
+      "class": "business",
+      "passengers": 1
+    },
+    "response_must_contain": [
+      "SU454",
+      "booked"
+    ],
+    "must_cancel": true,
+    "latency_ms": 800
+  },
+  "events": [
+    {
+      "ts": 0.0,
+      "type": "transcript",
+      "data": {
+        "text": "Book a flight from Paris to London tomorrow.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    },
+    {
+      "ts": 0.5,
+      "type": "interrupt",
+      "data": {
+        "reason": "user_override"
+      }
+    },
+    {
+      "ts": 0.55,
+      "type": "transcript",
+      "data": {
+        "text": "Actually, make that to Tokyo instead.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    },
+    {
+      "ts": 0.8,
+      "type": "interrupt",
+      "data": {
+        "reason": "user_override"
+      }
+    },
+    {
+      "ts": 0.85,
+      "type": "transcript",
+      "data": {
+        "text": "Make it business class.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    },
+    {
+      "ts": 1.1,
+      "type": "interrupt",
+      "data": {
+        "reason": "user_override"
+      }
+    },
+    {
+      "ts": 1.15,
+      "type": "transcript",
+      "data": {
+        "text": "Just one passenger.",
+        "end_of_turn": true,
+        "partial": false
+      }
+    }
+  ],
+  "trace": [
+    {
+      "ts": 0.0005,
+      "type": "narration",
+      "data": {
+        "text": "Okay, booking your trip to London."
+      }
+    },
+    {
+      "ts": 0.0007,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 0.5625,
+      "type": "filler",
+      "data": {
+        "text": "One moment \u2014 let me redo that."
+      }
+    },
+    {
+      "ts": 0.6079,
+      "type": "cancel",
+      "data": {
+        "call_ids": [
+          "c0001"
+        ]
+      }
+    },
+    {
+      "ts": 0.6243,
+      "type": "filler",
+      "data": {
+        "text": "Got it \u2014 let me start over."
+      }
+    },
+    {
+      "ts": 0.6245,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 0.9657,
+      "type": "cancel",
+      "data": {
+        "call_ids": [
+          "c0002"
+        ]
+      }
+    },
+    {
+      "ts": 0.9979,
+      "type": "narration",
+      "data": {
+        "text": "Okay, booking your trip to Tokyo."
+      }
+    },
+    {
+      "ts": 0.9981,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 1.3422,
+      "type": "cancel",
+      "data": {
+        "call_ids": [
+          "c0003"
+        ]
+      }
+    },
+    {
+      "ts": 1.3743,
+      "type": "filler",
+      "data": {
+        "text": "Okay, adjusting."
+      }
+    },
+    {
+      "ts": 1.3745,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0004",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        }
+      }
+    },
+    {
+      "ts": 2.1836,
+      "type": "narration",
+      "data": {
+        "text": "No flights that day \u2014 looking at nearby dates."
+      }
+    },
+    {
+      "ts": 2.1837,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0005",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo"
+        }
+      }
+    },
+    {
+      "ts": 2.9965,
+      "type": "tool_call",
+      "data": {
+        "call_id": "c0006",
+        "tool": "book_flight",
+        "args": {
+          "flight_id": "SU454",
+          "passengers": 1
+        }
+      }
+    },
+    {
+      "ts": 4.0029,
+      "type": "response",
+      "data": {
+        "text": "Done \u2014 flight SU454 is booked. Your reference is AER1001.",
+        "snapshot": {
+          "intent": "book_flight",
+          "slots": {
+            "origin": "paris",
+            "destination": "tokyo",
+            "date": "2026-09-25",
+            "class": "business",
+            "passengers": 1,
+            "flight_id": "SU454"
+          },
+          "version": 5,
+          "turn": 4,
+          "uncertain": [],
+          "reference_date": "2026-09-24",
+          "result_ok": true
+        }
+      }
+    }
+  ],
+  "agent_events": [],
+  "env": {
+    "calls": 6,
+    "call_records": [
+      {
+        "call_id": "c0001",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "london",
+          "date": "2026-09-25"
+        },
+        "ts": 0.0007,
+        "speculative": false,
+        "ok": true,
+        "error": null
+      },
+      {
+        "call_id": "c0002",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        },
+        "ts": 0.6245,
+        "speculative": false,
+        "ok": true,
+        "error": null
+      },
+      {
+        "call_id": "c0003",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        },
+        "ts": 0.9981,
+        "speculative": false,
+        "ok": true,
+        "error": null
+      },
+      {
+        "call_id": "c0004",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo",
+          "date": "2026-09-25"
+        },
+        "ts": 1.3745,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 2.1835552999999663
+      },
+      {
+        "call_id": "c0005",
+        "tool": "flight_search",
+        "args": {
+          "origin": "paris",
+          "destination": "tokyo"
+        },
+        "ts": 2.1837,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 2.9962891000000127
+      },
+      {
+        "call_id": "c0006",
+        "tool": "book_flight",
+        "args": {
+          "flight_id": "SU454",
+          "passengers": 1
+        },
+        "ts": 2.9965,
+        "speculative": false,
+        "ok": true,
+        "error": null,
+        "done_ts": 4.002716400000054
+      }
+    ],
+    "bookings": 1,
+    "cancelled_bookings": 0,
+    "tickets": 0,
+    "cancelled_ids": [
+      "c0001",
+      "c0002",
+      "c0003"
+    ]
+  }
+}
