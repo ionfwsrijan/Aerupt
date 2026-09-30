@@ -1,0 +1,15 @@
+# AERUPT core — the agent and the browser UI run with these.
+numpy>=2.0
+fastapi>=0.110
+uvicorn[standard]>=0.34
+python-dotenv>=1.0
+
+# Hybrid LLM / grounded Q&A (optional; AERUPT runs fully offline without it)
+groq>=0.14
+
+# RAG sentence-embedding upgrade (optional; TF-IDF retrieval needs none of this)
+# sentence-transformers>=3.0
+# faiss-cpu>=1.10
+
+# Local developer tooling
+# pytest>=8.0

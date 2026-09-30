@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: agent tests (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install core deps
+        run: pip install -r requirements.txt
+      - name: Compile all sources
+        run: python -m compileall -q aerupt harness ui tests
+      - name: Unit tests
+        run: python -m unittest discover -s tests -q
+
+  ui:
+    name: ui build (ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install client deps
+        run: npm install
+        working-directory: ui/client
+      - name: Typecheck + build
+        run: npm run build
+        working-directory: ui/client

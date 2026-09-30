@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aerupt"
+version = "1.1.0"
+description = "AERUPT — an interruptible real-time aviation agent (Samsung Prism GenAI, Theme 05)."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.34",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+llm = ["groq>=0.14"]
+rag = ["sentence-transformers>=3.0", "faiss-cpu>=1.10"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+aerupt-kb = "aerupt.rag:cli"
+
+[tool.setuptools]
+packages = ["aerupt", "aerupt.providers"]
