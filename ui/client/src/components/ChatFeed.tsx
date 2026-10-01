@@ -80,9 +80,11 @@ function userBubble(m: StampedMessage) {
 export function ChatFeed({
   feed,
   onReply,
+  suggestions,
 }: {
   feed: FeedState;
   onReply: (t: string) => void;
+  suggestions?: string[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const items = feed.items;
@@ -112,6 +114,19 @@ export function ChatFeed({
                 <span className="text-white/100">“Actually, to Tokyo.”</span> and watch AERUPT
                 gracefully cancel and redirect.
               </p>
+              {suggestions && suggestions.length > 0 && (
+                <div className="mx-auto mt-4 flex max-w-xl flex-wrap justify-center gap-1.5">
+                  {suggestions.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => onReply(s)}
+                      className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[12px] font-medium text-off transition hover:border-cyan-300/40 hover:bg-cyan-500/15 hover:text-white"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 

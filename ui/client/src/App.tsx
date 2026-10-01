@@ -20,6 +20,14 @@ function derivePhase(items: StampedMessage[]): SpherePhase {
   return "idle";
 }
 
+const SUGGESTIONS = [
+  "Book a flight from Paris to London tomorrow.",
+  "Actually, to Tokyo, two passengers.",
+  "Is my flight SU450 on time?",
+  "What's the carry-on limit?",
+  "Cancel the booking for SU450.",
+];
+
 export default function App() {
   const { feed, conn, manifestTools, commit, pushUser, partial, interrupt, reset } = useAerupt();
   const [speaking, setSpeaking] = useState(false);
@@ -118,7 +126,7 @@ export default function App() {
 
       <div className="relative z-10 grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_304px]">
         <main className="min-h-0">
-          <ChatFeed feed={feed} onReply={doCommit} />
+          <ChatFeed feed={feed} onReply={doCommit} suggestions={SUGGESTIONS} />
         </main>
         <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto border-l border-white/10 p-4 lg:flex">
           <SignalPanel onInterrupt={onInterrupt} lastInterruptAt={lastInterruptAt} />
