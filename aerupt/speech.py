@@ -101,6 +101,8 @@ class SpokenBrain:
             return "Checking the manual now."
         if "knowledge" in i or "qa" in i or "explain" in i or "kb" in i:
             return "Let me check the aviation knowledge base for that."
+        if "status" in i and ("flight" in i or "track" in i):
+            return "Let me check the live flight status for you."
         if "search" in i or "find" in i or "lookup" in i:
             if origin and dest:
                 tail = f", {date_lbl}." if date_lbl else "."
@@ -150,6 +152,20 @@ class SpokenBrain:
         flights = self._pick(result, "flights") or self._pick(result, "results")
         if flights and isinstance(flights, (list, tuple)) and "flight" in (tool or ""):
             return self._flights_text(flights, slots, snapshot)
+        if "status" in (tool or "") and isinstance(result, dict):
+            fid = self._pick(result, "flight_id")
+            st = str(self._pick(result, "status") or "").lower()
+            if result.get("ok") and st:
+                phrase = " ".join(
+                    w if w != "min" else "minutes" for w in st.split())
+                out = f"Your {fid or 'flight'} is {phrase}."
+                gate = self._pick(result, "gate")
+                term = self._pick(result, "terminal")
+                if gate:
+                    out += f" It's boarding at gate {gate}"
+                    out += f", terminal {term}." if term else "."
+                return out
+            return f"I couldn't get live status for {fid or 'that flight'}."
         if "flight" in (tool or "") and isinstance(result, dict):
             booked = self._pick(result, "booking") or self._pick(result, "confirmation")
             if booked or result.get("ok"):

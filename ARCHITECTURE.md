@@ -178,7 +178,10 @@ every search is superseded by the next retarget and re-executed once.
 ## Browser UI (`ui/server`, `ui/client`, `run_ui.py`)
 
 - FastAPI app (`ui/server/main.py`): one WebSocket per browser session, plus
-  `/api/health` and static serving of the built React app from `ui/client/dist`.
+  `/api/health` (reports `agent`, `version`, `platform` via
+  `active_provider().name`, and `mode` via `load_llm_config().human_label` =
+  `groq:<model>` / `deterministic`) and static serving of the built React app
+  from `ui/client/dist`.
 - `ui/server/session.py` bridges the live agent into a websocket: a
   `route_out` synchronously forwards every orchestrator action to both the
   async channel consumed by the mock environment (so tools actually resolve)
@@ -187,7 +190,9 @@ every search is superseded by the next retarget and re-executed once.
   tool name so the client can render per-tool cards.
 - The client (`ui/client/`) renders a vertical event feed: narration/typewriter
   text, per-tool cards (running → done/cancelled), clarify quick-reply chips,
-  and interrupt buttons. `end_of_turn:false` transcripts exercise the
+  and interrupt buttons. The empty chat state offers quick-action suggestion
+  chips (commit via the same `pushUser` + `commit` path as typed turns).
+  `end_of_turn:false` transcripts exercise the
   speculation path; `reset` tears down and re-arms the agent session.
 
 ## Hybrid LLM + RAG layer (aviation Q&A)
@@ -214,15 +219,29 @@ round-trip.
   (“answer only from the snippets, cite sources”) → LLM, else
   `_ground_snippet` (deterministic keyword-overlap bullet picker). Always
   returns `{"answer", "sources"}`.
-- Routing: `kb_lookup` is a UI-only tool (`FLIGHT_MANIFEST_UI` in
-  `ui/server/session.py`), layered on the shared `FLIGHT_MANIFEST` so the
-  harness evaluation is untouched. NLU has an explicit KB anchor (policy/rule/
+- Routing: `kb_lookup` and `flight_status` are UI/demo-only tools —
+  `FLIGHT_MANIFEST_UI` lives in `harness/scenarios.py` (shared by the console
+  demo and the websocket server session), layered on the shared
+  `FLIGHT_MANIFEST` so the harness evaluation is untouched. NLU has an explicit
+  KB anchor (policy/rule/
   baggage/security/TSA words; “can/could/am I bring…”, “do I need…”, “how
   many/much/big/…”) that beats noun-score ties, `Planner._knowledge_args`
   passes the *raw* utterance as `query` (the generic `_query_from_text`
   mangles natural questions), and `MockEnv._run_tool` answers it via
   `responder.answer_knowledge`. The UI tool card for `kb_lookup` shows the
   source files that grounded the answer.
+- Live tracking: a flight id (`\b[a-z]{1,3}\d{2,4}\b`) or a flight/departure
+  word plus a status verb (delayed/boarding/on time/tracked…) anchors
+  `flight_status` ahead of the KB anchor — but a policy question with no
+  flight reference (“baggage delay policy”) still routes to the KB.
+  `MockEnv._flight_status` derives status/gate/terminal deterministically from
+  the flight id so repeated queries agree and nothing is hallucinated.
+- Refund grounding: `MockEnv._cancel_booking` returns `refund_pct`/
+  `refund_amount` for a cancelled refundable booking — cabin-class shares
+  (economy 72% / business 88% / first 95%) from `REFUND_RATES`, mirrored in
+  `knowledge/50_refunds.md` so tool numbers and the cited policy stay
+  consistent. The narration/reply contract (reference + flight_id) is
+  unchanged.
 
 The tool is named `kb_lookup` rather than `knowledge_search`: the latter’s
 `search` token collided with `flight_search` in the manifest-driven scorer and
@@ -248,7 +267,9 @@ Execution is fronted by `BookingProvider`:
 - `MockEnv._run_tool` routes `search*`/`cancel*`/`book*` to the live provider
   *only* when `_live_provider()` is non-None (platform is **and** configured);
   otherwise the inline sandbox runs — so with no credentials the harness,
-  e2e, and UI all execute the exact evaluated code path.
+  e2e, and UI all execute the exact evaluated code path. `status*` tools
+  always resolve inline (`_flight_status`), safe to execute beside a live
+  provider.
 
 ## Config knobs (`aerupt/config.py`)
 

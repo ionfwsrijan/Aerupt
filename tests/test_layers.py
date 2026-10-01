@@ -336,5 +336,23 @@ class TestRefunds(unittest.TestCase):
         self.assertEqual(again["error"], "already_cancelled")
 
 
+class TestFlightStatusNarration(unittest.TestCase):
+    def test_status_narration_is_grounded(self):
+        from aerupt.speech import SpokenBrain
+        text = SpokenBrain().respond(
+            {"ok": True, "flight_id": "SU450", "status": "DELAYED 40 MIN",
+             "gate": "B14", "terminal": 1},
+            {"slots": {}}, tool="flight_status")
+        self.assertIn("delayed 40 minutes", text.lower())
+        self.assertIn("gate b14", text.lower())
+        self.assertNotIn("booked", text.lower())
+
+    def test_status_intent_narration(self):
+        from aerupt.speech import SpokenBrain
+        text = SpokenBrain().narrate_intent("flight_status", {"slots": {}},
+                                            "Is my flight SU450 on time?")
+        self.assertIn("live flight status", text.lower())
+
+
 if __name__ == "__main__":
     unittest.main()

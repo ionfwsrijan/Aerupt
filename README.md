@@ -40,7 +40,12 @@ framer-motion + lucide-react) over the same agent pipeline — running tool card
 typewriter narration, barge-in/stop interrupts, clarification quick-replies,
 live transcript for real microphone input, spoken responses (local TTS with a
 header mute toggle — a barge-in cuts the voice mid-sentence), and a vertical
-timeline.
+timeline. The empty chat state offers **quick-action chips** (book, retarget,
+flight status, knowledge) that commit the same way a typed turn does.
+
+`GET /api/health` reports what stack the server is actually running:
+`agent`, `version`, `platform` (`mock` / `amadeus`), and `mode`
+(`groq:<model>` when a Groq key is configured, else `deterministic`).
 
 ```powershell
 py run_ui.py                            # serve on http://127.0.0.1:8000
@@ -119,6 +124,21 @@ $env:GROQ_API_KEY = "…"      # for grounded knowledge answers
 
 `AMADEUS_BASE_URL` defaults to `https://test.api.amadeus.com`; use
 `https://api.amadeus.com` for production credentials.
+
+## Interactive flight tools
+
+The browser UI and console demo run the canonical three-flight-tool manifest
+(`flight_search` / `book_flight` / `cancel_booking`) **plus** two read-only
+interactive tools that stay out of the evaluated harness manifest:
+
+- **`flight_status`** — deterministic live tracking (status, gate, terminal)
+  for any spoken flight id, e.g. *“Is my flight SU450 on time?”*.
+- **`kb_lookup`** — the RAG-backed aviation knowledge tool (below).
+
+Cancelling a booking returns a **refund grounding**: a refund share per cabin
+class (economy 72% / business 88% / first 95%) computed from the fare on file
+and cross-checked against `knowledge/50_refunds.md`, plus the refunded amount —
+so the agent's numbers always match the policy it cites.
 
 ## Scoring scenarios
 
