@@ -44,6 +44,11 @@ FLIGHT_DB = [
 
 DEFAULT_TRAVEL_DATE = "2026-09-24"
 
+# Refund share of the paid fare after cancellation, per cabin class. Mirrors
+# the refunds knowledge base (knowledge/50_refunds.md) so the tool's numbers
+# always match the policy the agent cites.
+REFUND_RATES = {"economy": 0.72, "business": 0.88, "first": 0.95}
+
 
 def make_wav(seconds: float = 1.2, sr: int = 16000, tone_hz: float = 220.0,
              amplitude: float = 0.5) -> bytes:
@@ -269,12 +274,21 @@ class MockEnv:
                             "existing": b.get("reference")}
                 b["cancelled"] = True
                 b["reason"] = "user_request"
+                f = next((x for x in FLIGHT_DB
+                          if str(x.get("id")) == str(b["flight_id"]).upper()), {})
+                price = float(f.get("price") or 0)
+                rate = REFUND_RATES.get(
+                    str(f.get("class") or "economy").lower(), 0.72)
+                b["refund"] = {"pct": int(round(rate * 100)),
+                               "amount": round(price * rate, 2)}
                 self.cancelled_bookings.append(dict(b))
                 return {"ok": True,
                         "cancelled": {"flight_id": b["flight_id"],
                                       "reference": b["reference"]},
                         "flight_id": b["flight_id"],
-                        "reference": b["reference"]}
+                        "reference": b["reference"],
+                        "refund_pct": b["refund"]["pct"],
+                        "refund_amount": b["refund"]["amount"]}
         return {"ok": False, "error": "no_such_booking",
                 "requested": fid or ref}
 

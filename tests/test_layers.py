@@ -292,5 +292,49 @@ class TestHealthEndpoint(unittest.TestCase):
         self.assertEqual(out["mode"], "deterministic")
 
 
+class TestRefunds(unittest.TestCase):
+    def test_cancel_reports_cabin_refund(self):
+        from aerupt.utils import Clock
+        from harness.mockenv import FLIGHT_DB, MockEnv
+
+        async def run():
+            env = MockEnv(clock=Clock(scale=1.0))
+            biz = await env._run_tool("book_flight", {"flight_id": "SU452"})
+            eco = await env._run_tool("book_flight", {"flight_id": "SU450"})
+            out = await env._run_tool(
+                "cancel_booking", {"reference": biz["reference"]})
+            out2 = await env._run_tool(
+                "cancel_booking", {"reference": eco["reference"]})
+            return out, out2
+
+        out, out2 = asyncio.run(run())
+        f_biz = next(x for x in FLIGHT_DB if x["id"] == "SU452")
+        f_eco = next(x for x in FLIGHT_DB if x["id"] == "SU450")
+        self.assertTrue(out["ok"])
+        self.assertEqual(out["refund_pct"], 88)
+        self.assertEqual(out["refund_amount"], round(f_biz["price"] * 0.88, 2))
+        self.assertEqual(out2["refund_pct"], 72)
+        self.assertEqual(out2["refund_amount"], round(f_eco["price"] * 0.72, 2))
+        # Original narration fields are unchanged.
+        self.assertEqual(out["flight_id"], "SU452")
+        self.assertIn("reference", out)
+
+    def test_cancel_unchanged_when_already_cancelled(self):
+        from aerupt.utils import Clock
+        from harness.mockenv import MockEnv
+
+        async def run():
+            env = MockEnv(clock=Clock(scale=1.0))
+            book = await env._run_tool("book_flight", {"flight_id": "SU450"})
+            await env._run_tool("cancel_booking", {"reference": book["reference"]})
+            again = await env._run_tool(
+                "cancel_booking", {"reference": book["reference"]})
+            return again
+
+        again = asyncio.run(run())
+        self.assertFalse(again["ok"])
+        self.assertEqual(again["error"], "already_cancelled")
+
+
 if __name__ == "__main__":
     unittest.main()

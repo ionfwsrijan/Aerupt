@@ -31,6 +31,19 @@ The refund outcome depends on the **fare rules attached to the ticket**, not on 
 | Basic economy | No | Usually no | none (nothing to take) |
 | Award (miles) | No cash (miles returned) | — | redeposit fee |
 
+## Cancellation refund share by cabin class
+For a cancelled, refundable booking, AERUPT reports the **refundable share of
+the fare paid**, which varies by cabin class (all other fees still apply):
+| Cabin class | Refund share |
+| --- | --- |
+| Economy | 72% |
+| Business | 88% |
+| First | 95% |
+
+So cancelling a EUR 640 economy fare returns about **EUR 461**, a EUR 712
+business fare about **EUR 627**, and a first-class fare keeps nearly the full
+amount. Non-refundable fares still return no cash regardless of cabin class.
+
 ## Practical guidance to give travelers
 - Read the fare rules **at booking time** — that is when the class is locked in.
 - Book a refundable fare when plans are uncertain; it is the only path to cash back.
