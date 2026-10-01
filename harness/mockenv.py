@@ -175,6 +175,8 @@ class MockEnv:
         if "knowledge" in tool or "qa" in tool or "explain" in tool \
                 or "kb_" in tool:
             return await self._knowledge(args)
+        if "status" in tool:
+            return self._flight_status(args)
         prov = _live_provider()
         if prov is not None:
             if any(k in tool for k in ("search", "find", "availability", "quote")):
@@ -226,6 +228,24 @@ class MockEnv:
         sorted_res = sorted(results, key=lambda f: f.get("price", float("inf")))
         return {"ok": True, "flights": sorted_res, "count": len(sorted_res)}
 
+    # -- live flight tracking -------------------------------------------------
+    _STATUS_ROTATION = ["ON TIME", "DELAYED 40 MIN", "BOARDING", "AT GATE"]
+
+    def _flight_status(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        """Deterministic, grounding-honest status for a booked/searchable
+        flight: gates, terminals and live state are derived from the flight
+        id so repeated queries agree and nothing is hallucinated."""
+        fid = str(args.get("flight_id") or args.get("flight") or args.get("id") or "").upper()
+        seed = sum(ord(c) for c in fid) if fid else len(self.bookings)
+        status = self._STATUS_ROTATION[seed % len(self._STATUS_ROTATION)]
+        return {"ok": bool(fid),
+                "flight_id": fid,
+                "status": status,
+                "gate": chr(65 + seed % 5) + str(1 + seed % 22),
+                "terminal": 1 + seed % 3,
+                "updated": "live"}
+
+    # -- tool behaviour --------------------------------------------------------------
     def _book(self, args: Dict[str, Any]) -> Dict[str, Any]:
         fid = args.get("flight_id") or args.get("flight") or args.get("id")
         for b in self.bookings:

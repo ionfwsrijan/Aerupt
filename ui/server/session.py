@@ -12,26 +12,9 @@ from aerupt.agent import InterruptibleAgent
 from aerupt.protocol import Event
 from aerupt.utils import Clock
 from harness.mockenv import MockEnv
-from harness.scenarios import FLIGHT_MANIFEST
+from harness.scenarios import FLIGHT_MANIFEST_UI
 
 REFERENCE_TODAY = "2026-09-23"
-
-# Browser UI manifest: flight workflow + RAG-backed aviation knowledge.
-# (The harness sweep keeps the shared FLIGHT_MANIFEST untouched.)
-_KNOWLEDGE_TOOL = {
-    "name": "kb_lookup",
-    "params": [
-        {"name": "query", "type": "string", "required": True,
-         "description": "natural-language aviation question"},
-        {"name": "topic", "type": "string",
-         "enum": ["baggage", "security", "refunds", "rebooking",
-                  "airports", "loyalty", "booking", "restrictions"]},
-    ],
-}
-FLIGHT_MANIFEST_UI = {
-    "tools": FLIGHT_MANIFEST["tools"] + [_KNOWLEDGE_TOOL],
-    "reference_date": FLIGHT_MANIFEST.get("reference_date"),
-}
 
 
 class AgentSession:

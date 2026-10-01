@@ -583,6 +583,17 @@ class NLU:
                 if any(k in name for k in ("book", "reserve", "purchase",
                                            "buy", "hold")):
                     return name
+        # Live flight tracking: a flight/departure word or explicit flight id
+        # plus a status verb routes to flight_status. Kept narrow so "baggage
+        # delay policy" (no flight id / no flight word) still hits knowledge.
+        if re.search(r"\b[a-z]{1,3}\d{2,4}\b", t) or \
+                re.search(r"\b(flight|departure|arrival|landing)\b", t):
+            if re.search(
+                    r"\b(status|on[- ]?time|delayed|delay|boarding|departed|"
+                    r"arrived|cancelled|at the gate|track(?:ing)?)\b", t):
+                for name in self.bandit.known_tools():
+                    if "status" in name:
+                        return name
         # aviation-knowledge questions (policy / rules / how-to) must route to
         # the RAG-backed knowledge tool rather than a booking tool.
         if re.search(

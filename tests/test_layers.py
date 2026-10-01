@@ -215,5 +215,64 @@ class TestProviders(unittest.TestCase):
         self.assertIn("OFFER987", prov._offers)
 
 
+class TestFlightStatus(unittest.TestCase):
+    def setUp(self):
+        from harness.scenarios import FLIGHT_MANIFEST_UI
+        self.ui_tools = FLIGHT_MANIFEST_UI["tools"]
+        self.names = [t["name"] for t in FLIGHT_MANIFEST_UI["tools"]]
+
+    def test_manifest_ui_shares_flight_manifest(self):
+        from harness.scenarios import FLIGHT_MANIFEST
+        base = [t["name"] for t in FLIGHT_MANIFEST["tools"]]
+        # The evaluated sweep manifest is unchanged (3 flight tools only).
+        self.assertFalse(any("kb" in n or "status" in n for n in base))
+        # The interactive manifest extends it with knowledge + status.
+        for name in base:
+            self.assertIn(name, self.names)
+        self.assertIn("flight_status", self.names)
+        self.assertIn("kb_lookup", self.names)
+
+    def test_status_requires_flight_id(self):
+        tool = next(t for t in self.ui_tools if t["name"] == "flight_status")
+        self.assertTrue(any(p["name"] == "flight_id" and p["required"]
+                            for p in tool["params"]))
+
+    def test_intent_routes_status(self):
+        from harness.scenarios import FLIGHT_MANIFEST_UI
+        nlu = NLU()
+        nlu.load_manifest(FLIGHT_MANIFEST_UI["tools"])
+        self.assertEqual(nlu.detect_intent("Is my flight SU450 delayed?"),
+                         "flight_status")
+        self.assertEqual(nlu.detect_intent("What's the status of SU451?"),
+                         "flight_status")
+        self.assertEqual(nlu.detect_intent("Track my departure from Berlin"),
+                         "flight_status")
+        # Policy queries about delays must NOT become status lookups.
+        self.assertEqual(nlu.detect_intent("baggage delay policy"),
+                         "kb_lookup")
+        self.assertEqual(nlu.detect_intent("how long is my delay"),
+                         "kb_lookup")
+
+    def test_env_status_is_deterministic(self):
+        from aerupt.utils import Clock
+        from harness.mockenv import MockEnv
+
+        async def run():
+            env = MockEnv(clock=Clock(scale=1.0))
+            a = await env._run_tool("flight_status", {"flight_id": "SU450"})
+            b = await env._run_tool("flight_status", {"flight_id": "SU450"})
+            c = await env._run_tool("flight_status", {"flight_id": "SU451"})
+            return a, b, c
+
+        a, b, c = asyncio.run(run())
+        self.assertTrue(a["ok"])
+        self.assertEqual(a, b)
+        self.assertEqual(a["flight_id"], "SU450")
+        self.assertIn(a["status"], ["ON TIME", "DELAYED 40 MIN",
+                                    "BOARDING", "AT GATE"])
+        self.assertTrue(str(a["gate"]).startswith(("A", "B", "C", "D", "E")))
+        self.assertIn(a["terminal"], (1, 2, 3))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -32,6 +32,37 @@ FLIGHT_MANIFEST = {
     "reference_date": "2026-09-24",
 }
 
+# RAG-backed aviation knowledge Q&A shared by the interactive front-ends.
+KB_LOOKUP_TOOL = {
+    "name": "kb_lookup",
+    "params": [
+        {"name": "query", "type": "string", "required": True,
+         "description": "natural-language aviation question"},
+        {"name": "topic", "type": "string",
+         "enum": ["baggage", "security", "refunds", "rebooking",
+                  "airports", "loyalty", "booking", "restrictions"]},
+    ],
+}
+
+# Live flight tracking: read-only follow-up to a search/booking so the agent
+# never has to invent gate/status details. Kept OUT of FLIGHT_MANIFEST (the
+# evaluated sweep manifest) and surfaced only to the interactive front-ends.
+FLIGHT_STATUS_TOOL = {
+    "name": "flight_status",
+    "params": [
+        {"name": "flight_id", "type": "string", "required": True},
+    ],
+}
+
+# Interactive front-end manifest: the canonical flight workflow plus the
+# RAG-backed knowledge tool and live flight status. The harness sweep keeps
+# FLIGHT_MANIFEST exactly as-is.
+FLIGHT_MANIFEST_UI = {
+    "tools": FLIGHT_MANIFEST["tools"]
+             + [KB_LOOKUP_TOOL, FLIGHT_STATUS_TOOL],
+    "reference_date": FLIGHT_MANIFEST.get("reference_date"),
+}
+
 SUPPORT_MANIFEST = {
     "tools": [
         {"name": "create_ticket", "params": [
