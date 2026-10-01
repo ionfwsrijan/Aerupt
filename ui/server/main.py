@@ -14,6 +14,8 @@ from fastapi.staticfiles import StaticFiles
 
 from aerupt import __version__
 from aerupt.config import load_env
+from aerupt.llm import load_llm_config
+from aerupt.providers import active_provider
 from ui.server.session import AgentSession
 
 load_env()
@@ -28,7 +30,9 @@ app = FastAPI(title="AERUPT — Interruptible Real-Time Agent")
 @app.get("/api/health")
 async def health() -> Dict[str, Any]:
     return {"ok": True, "built": os.path.exists(INDEX),
-            "agent": "AERUPT", "version": __version__}
+            "agent": "AERUPT", "version": __version__,
+            "platform": active_provider().name,
+            "mode": load_llm_config().human_label}
 
 
 @app.websocket("/ws")

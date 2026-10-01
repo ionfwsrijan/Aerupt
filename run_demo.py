@@ -9,6 +9,8 @@ Behaviors to try:
   * Interrupt: "Actually to Tokyo, make it two passengers."
   * Repair: "Search from Berlin to … sorry, I mean from New York to LA."
   * Retry: search flight, then "Book it."
+  * Tracking: "Is my flight SU450 on time?"
+  * Knowledge: "What's the carry-on limit?"
 """
 from __future__ import annotations
 
@@ -23,7 +25,7 @@ from aerupt.config import load_env
 from aerupt.protocol import Event
 from aerupt.utils import Clock, canonical_json
 from harness.mockenv import MockEnv
-from harness.scenarios import FLIGHT_MANIFEST
+from harness.scenarios import FLIGHT_MANIFEST_UI
 
 load_env()
 
@@ -71,7 +73,7 @@ async def _main() -> None:
     agent.orch._send = route_out
     await agent.setup()
     await agent.handle_event(
-        Event("manifest", FLIGHT_MANIFEST, ts=0.0)
+        Event("manifest", FLIGHT_MANIFEST_UI, ts=0.0)
     )
 
     print("AERUPT demo — type your request, then watch AERUPT react (Ctrl+C to quit).")

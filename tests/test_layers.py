@@ -274,5 +274,23 @@ class TestFlightStatus(unittest.TestCase):
         self.assertIn(a["terminal"], (1, 2, 3))
 
 
+class TestHealthEndpoint(unittest.TestCase):
+    def setUp(self):
+        for k in ("AERUPT_PLATFORM", "GROQ_API_KEY", "LLM_API_KEY",
+                  "AERUPT_LLM"):
+            os.environ.pop(k, None)
+        from aerupt.providers import reset_provider_cache
+        reset_provider_cache()
+
+    def test_health_reports_stack(self):
+        from ui.server.main import health
+        out = asyncio.run(health())
+        self.assertTrue(out["ok"])
+        self.assertEqual(out["agent"], "AERUPT")
+        self.assertIn("version", out)
+        self.assertEqual(out["platform"], "mock")
+        self.assertEqual(out["mode"], "deterministic")
+
+
 if __name__ == "__main__":
     unittest.main()
